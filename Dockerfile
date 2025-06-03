@@ -3,12 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copiază fișierele de proiect și restore dependințele
-COPY ./src/users.Api/*.csproj ./src/users.Api/
-RUN dotnet restore ./src/users.Api/users.Api.csproj
+COPY ./users/src/users.Api/*.csproj ./users/src/users.Api/
+RUN dotnet restore ./users/src/users.Api/users.Api.csproj
 
 # Copiază restul codului și build
 COPY . .
-RUN dotnet publish ./src/users.Api/users.Api.csproj -c Release -o /app/publish
+RUN dotnet publish ./users/src/users.Api/users.Api.csproj -c Release -o /app/publish
 
 # Etapa 2: runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
