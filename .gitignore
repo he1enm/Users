@@ -1,0 +1,53 @@
+## Fisiere de build
+bin/
+obj/
+
+## Fisiere temporare si cache
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+*.log
+
+## Setari personale
+*.vs/
+.vs/
+
+## Fisiere de configurare ale Rider/JetBrains
+.idea/
+
+## Fisiere publice generate
+wwwroot/dist/
+wwwroot/node_modules/
+
+## Node.js (daca folosesti frontend cu Node)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+## Dotnet-ef migration files temporare
+Migrations/*Designer.cs
+Migrations/*Snapshot.cs
+
+## Secrets
+appsettings.Development.json
+secrets.json
+
+## Fisiere publicate
+publish/
+*.Publish.xml
+
+## Alte fisiere comune
+.env
+*.db
+*.sqlite
+*.pdb
+*.cache
+*.dbmdl
+*.bak
+
+## Sistemul de operare
+.DS_Store
+Thumbs.db
