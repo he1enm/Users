@@ -1,8 +1,12 @@
 namespace Users.Api.Models;
 
-public class UserResponse
+using Users.Api.Domain.Users;
+public sealed record UserResponse(
+    Guid Id,
+    string FirstName,
+    string LastName)
 {
-    public Guid Id           { get; set; }
-    public string FullName   { get; set; } = string.Empty;
-    public string Email      { get; set; } = string.Empty;
+    public static UserResponse FromDomainModel(User user) =>
+        new UserResponse(user.Id, user.FirstName, user.LastName);
 }
+

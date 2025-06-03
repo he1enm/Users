@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Users.Api.Models;
 using Users.Api.Services;
+using Users.Api.Domain.Users;
 
 namespace Users.Api.Controllers;
 
@@ -13,7 +14,8 @@ public class UserController(UserService userService) : ControllerBase
     [HttpGet]
     public IActionResult GetAllUsers()
     {
-        var users = _userService.GetAllUsers();
+        var users = _userService.GetAllUsers()
+            .Select(UserResponse.FromDomainModel);
         return Ok(users);
     }
 
@@ -21,7 +23,7 @@ public class UserController(UserService userService) : ControllerBase
     public IActionResult GetUserById(Guid id)
     {
         var user = _userService.GetUserById(id);
-        return user is not null ? Ok(user) : NotFound();
+        return user is not null ? Ok(UserResponse.FromDomainModel(user)) : NotFound();
     }
 
     [HttpPost]
@@ -31,12 +33,7 @@ public class UserController(UserService userService) : ControllerBase
             return BadRequest(ModelState);
 
         var newUser = _userService.RegisterUser(request);
-
-        return CreatedAtAction(
-            nameof(GetUserById),
-            new { id = newUser.Id },
-            newUser
-        );
+        return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, UserResponse.FromDomainModel(newUser));
     }
 
     [HttpPut("{id}")]
@@ -46,8 +43,7 @@ public class UserController(UserService userService) : ControllerBase
             return BadRequest(ModelState);
 
         var updatedUser = _userService.UpdateUser(id, request);
-
-        return updatedUser is not null ? Ok(updatedUser) : NotFound();
+        return updatedUser is not null ? Ok(UserResponse.FromDomainModel(updatedUser)) : NotFound();
     }
 
     [HttpDelete("{id}")]
@@ -56,4 +52,6 @@ public class UserController(UserService userService) : ControllerBase
         var deleted = _userService.DeleteUser(id);
         return deleted ? NoContent() : NotFound();
     }
+
+    
 }
