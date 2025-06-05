@@ -1,9 +1,9 @@
 namespace Users.Api.Domain.Users;
 
-public record User
+public class User
 {
-    public Guid Id;
-    public string FirstName = string.Empty;
-    public string LastName = string.Empty;
-    public string Email = string.Empty;
+    public Guid Id { get; set; } 
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 }

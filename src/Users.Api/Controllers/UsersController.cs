@@ -4,7 +4,6 @@ using Users.Api.Services;
 using Users.Api.Domain.Users;
 
 namespace Users.Api.Controllers;
-
 [ApiController]
 [Route("users")]
 public class UserController(UserService userService) : ControllerBase
@@ -12,46 +11,35 @@ public class UserController(UserService userService) : ControllerBase
     private readonly UserService _userService = userService;
 
     [HttpGet]
-    public IActionResult GetAllUsers()
-    {
-        var users = _userService.GetAllUsers()
-            .Select(UserResponse.FromDomainModel);
-        return Ok(users);
-    }
+    public async Task<IActionResult> GetAllUsers()
+        => Ok(await _userService.GetAllUsersAsync());
 
     [HttpGet("{id}")]
-    public IActionResult GetUserById(Guid id)
+    public async Task<IActionResult> GetUserById(Guid id)
     {
-        var user = _userService.GetUserById(id);
-        return user is not null ? Ok(UserResponse.FromDomainModel(user)) : NotFound();
+        var user = await _userService.GetUserByIdAsync(id);
+        return user is not null ? Ok(user) : NotFound();
     }
 
     [HttpPost]
-    public IActionResult RegisterUser([FromBody] RegisterUserRequest request)
+    public async Task<IActionResult> RegisterUser([FromBody] User user)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var newUser = _userService.RegisterUser(request);
-        return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, UserResponse.FromDomainModel(newUser));
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        var newUser = await _userService.RegisterUserAsync(user);
+        return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
+    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] User user)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var updatedUser = _userService.UpdateUser(id, request);
-        return updatedUser is not null ? Ok(UserResponse.FromDomainModel(updatedUser)) : NotFound();
+        var updated = await _userService.UpdateUserAsync(id, user);
+        return updated is not null ? Ok(updated) : NotFound();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteUser(Guid id)
+    public async Task<IActionResult> DeleteUser(Guid id)
     {
-        var deleted = _userService.DeleteUser(id);
+        var deleted = await _userService.DeleteUserAsync(id);
         return deleted ? NoContent() : NotFound();
     }
-
-    
 }
