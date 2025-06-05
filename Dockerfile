@@ -3,12 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copiază fișierele de proiect și restore dependințele
-COPY ./users/src/users.Api/*.csproj ./users/src/users.Api/
-RUN dotnet restore ./users/src/users.Api/users.Api.csproj
+COPY ./src/Users.Api/*.csproj ./src/Users.Api/
+RUN dotnet restore ./src/Users.Api/Users.Api.csproj
 
 # Copiază restul codului și build
 COPY . .
-RUN dotnet publish ./users/src/users.Api/users.Api.csproj -c Release -o /app/publish
+RUN dotnet publish ./src/Users.Api/Users.Api.csproj -c Release -o /app/publish
 
 # Etapa 2: runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -19,4 +19,4 @@ COPY --from=build /app/publish .
 EXPOSE 80
 
 # Comandă de pornire
-ENTRYPOINT ["dotnet", "users.Api.dll"]
+ENTRYPOINT ["dotnet", "Users.Api.dll"]
