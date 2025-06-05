@@ -19,4 +19,4 @@ COPY --from=build /app/publish .
 EXPOSE 80
 
 # Comandă de pornire
-ENTRYPOINT ["dotnet", "users.Api.dll"]
+ENTRYPOINT ["dotnet", "Users.Api.dll"]
