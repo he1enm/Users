@@ -1,51 +1,47 @@
+using Microsoft.EntityFrameworkCore;
+using Users.Api.Data;
 using Users.Api.Domain.Users;
-using Users.Api.Models;
 
 namespace Users.Api.Services;
 
-public class UserService
+public class UserService(UsersDbContext dbContext)
 {
-    private static readonly List<User> _users = new();
+    private readonly UsersDbContext _dbContext = dbContext;
 
-    public IEnumerable<User> GetAllUsers() => _users;
+    public async Task<IEnumerable<User>> GetAllUsersAsync() =>
+        await _dbContext.Users.ToListAsync();
 
-    public User? GetUserById(Guid id) =>
-        _users.FirstOrDefault(u => u.Id == id);
+    public async Task<User?> GetUserByIdAsync(Guid id) =>
+        await _dbContext.Users.FindAsync(id);
 
-    public User RegisterUser(RegisterUserRequest request)
+    public async Task<User> RegisterUserAsync(User user)
     {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email
-        };
-
-        _users.Add(user);
+        user.Id = Guid.NewGuid();
+        _dbContext.Users.Add(user);
+        await _dbContext.SaveChangesAsync();
         return user;
     }
 
-    public User? UpdateUser(Guid id, UpdateUserRequest request)
+    public async Task<User?> UpdateUserAsync(Guid id, User updatedUser)
     {
-        var user = _users.FirstOrDefault(u => u.Id == id);
-        if (user is null)
-            return null;
+        var user = await _dbContext.Users.FindAsync(id);
+        if (user is null) return null;
 
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
-        user.Email = request.Email;
+        user.FirstName = updatedUser.FirstName;
+        user.LastName = updatedUser.LastName;
+        user.Email = updatedUser.Email;
 
+        await _dbContext.SaveChangesAsync();
         return user;
     }
 
-    public bool DeleteUser(Guid id)
+    public async Task<bool> DeleteUserAsync(Guid id)
     {
-        var user = _users.FirstOrDefault(u => u.Id == id);
-        if (user is null)
-            return false;
+        var user = await _dbContext.Users.FindAsync(id);
+        if (user is null) return false;
 
-        _users.Remove(user);
+        _dbContext.Users.Remove(user);
+        await _dbContext.SaveChangesAsync();
         return true;
     }
 }
